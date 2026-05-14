@@ -1,6 +1,8 @@
 
 
 
+
+
 //Global headers
 #include <Arduino.h>
 #include <U8g2lib.h>
@@ -98,7 +100,7 @@ void setup() {
   preferences.begin("credentials", false);
   ssid = preferences.getString("ssid", "");
   password = preferences.getString("password", "");
-  name = preferences.getString("name", "Your Name Here       ");
+  name = preferences.getString("name", "JakeTheSnake       ");
   screenTimeout = preferences.getInt("screenTimeout",0);
   gmtOffset_sec = preferences.getLong("gmtOffset_sec",EST);
   debug =  preferences.getBool("debug",false);
