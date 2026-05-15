@@ -79,7 +79,7 @@ uint8_t logoCount = 2; //Logo index
 uint8_t stateCount = 8; //State index
 uint8_t buttons = 0x00; //Holds button presses
 
-uint8_t screenCount = 4; //Screen index chnage to 4 to show time screen
+uint8_t screenCount = 5; //Screen index chnage to 4 to show time screen
 int screen = 0; //screen var
 int BT_Count = 0;
 
@@ -228,6 +228,7 @@ void loop() {
       case 1: drawPageTwo();break;
       case 2: drawPageThree(BATTERY_READ);break;
       case 3: drawPageFour(scrollSpeed);break;
+      case 4: drawPageFive();break;
     }
     if(state != oldState){
       setStatus(state, 10);
@@ -337,8 +338,23 @@ void drawOompa(uint8_t num, uint8_t color){
       y += 26;
       x = 0;
     }
-  }
+  }   
 }
+// create moveOompa(x,y) 
+//void moveOompa(uint8_t x, uint8_t y){
+//  //Serial.println("Draw Oompa");
+//  uint8_t x = 0;
+//  uint8_t y = 12;
+//  u8g2.setDrawColor(color);
+//  for(int i=0; i < num; i++){
+//    u8g2.drawXBM(x,y, oompa_width,oompa_height,oopma_bits);
+//    x += 18;
+//    if(x > (128-18)){
+//      y += 26;
+//      x = 0;
+//    }
+//  }   
+//}
 void showLevel(int x, int y, uint8_t lvl){
   //Serial.println("Show Level");
   switch(lvl){
@@ -667,7 +683,7 @@ void drawPageTwo(void){
   
   do{
     //print items to screen
-      if(strlen(BT_Dev.c_str()) > 1){
+    if(strlen(BT_Dev.c_str()) > 1){
       u8g2.setFont(u8g2_font_6x12_mr);
       int width = u8g2.getUTF8Width(BT_Dev.c_str());
       int x_pos = (128 - width)/2;
@@ -778,6 +794,55 @@ void drawPageFour(int rate){
     }while(u8g2.nextPage());
     scrollTime = new_time; // Reset Frame rate ticks
   }
+}
+void drawPageFive(void){
+  if(buttons != old_buttons){
+    switch(buttons){
+      case 0x01: screen = (screen+1)%screenCount; break;
+      case 0x02: break; //Don't care presses
+      case 0x04: if(screen > 0){ screen--; }else{ screen = screenCount-1;} break;
+      case 0x08: break; //Don't care presses
+      case 0x10: if(oompa < 14){oompa++;}else{oompa = 14;} break;
+      case 0x20: state = (state+1)%stateCount; break;
+      case 0x40: if(oompa > 1){oompa--;}else{oompa = 1;} break;
+      case 0x80: if(state > 0) state--;else state = stateCount-1; break;
+    }
+    old_buttons = buttons;
+  }
+  u8g2.firstPage();
+  
+  do{
+    //print items to screen
+    if(strlen(name.c_str()) > 1){
+      u8g2.setFont(u8g2_font_6x12_mr);
+      int width = u8g2.getUTF8Width(name.c_str());
+      int x_pos = (128 - width)/2;
+      u8g2.setDrawColor(1);
+      u8g2.drawStr(x_pos, 10, name.c_str());
+      drawOompa(1, 0); // test oompa
+      if(buttons == 0x10){
+        // move up
+      }
+      if(buttons == 0x20){
+        //move right
+      }
+      if(buttons == 0x40){
+        //move down
+      }
+      if(buttons == 0x80){
+        //move left
+        //x += width;           // add the pixel width of the oompa
+        //drawOompa(1, 0); change to a new object with x,y params
+        
+      }
+    }else{
+      u8g2.setFont(u8g2_font_6x12_mr);
+      u8g2.setDrawColor(1);
+      u8g2.drawStr((128 - u8g2.getUTF8Width("Press any key"))/2, 10, "Press any key");
+      u8g2.drawStr((128 - u8g2.getUTF8Width("Use Right D-Pad"))/2, 22, "Use Right D-Pad");
+      u8g2.drawStr((128 - u8g2.getUTF8Width("To Play"))/2, 34, "To Play");
+    }
+  }while(u8g2.nextPage());
 }
 int checkBLE(void) {
   pBLEScan = BLEDevice::getScan();

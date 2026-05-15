@@ -41,7 +41,7 @@ brew install arduino-cli
 * https://pypi.org/project/esptool/
 ```
 pip install esptool
-```
+```brew install ardunino-
 
 ## test connection and note serial port
 * connect badge to USB
